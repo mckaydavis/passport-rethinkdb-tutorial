@@ -28,6 +28,13 @@ var config = {
     clientID: process.env.BOX_CLIENT_ID,
     clientSecret: process.env.BOX_CLIENT_SECRET
   },
+
+  "dropbox-oauth2": {
+    apiVersion: "2",
+    clientID: process.env.DROPBOX_CLIENT_ID,
+    clientSecret: process.env.DROPBOX_CLIENT_SECRET
+  },
+
 };
 
 config.realmURL = 'http://' + config.url + ':' + config.port;

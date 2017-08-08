@@ -12,7 +12,7 @@ function redirectRoot(req, res) {
 }
 
 
-var types = ['twitter', 'google', 'facebook', 'github', 'box'];
+var types = ['twitter', 'google', 'facebook', 'github', 'box', 'dropbox-oauth2'];
 
 var opts = {
   google: {

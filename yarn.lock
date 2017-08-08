@@ -1101,6 +1101,13 @@ passport-box@^2.1.0:
     passport-oauth2 "^1.1.2"
     pkginfo "^0.3.0"
 
+passport-dropbox-oauth2@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/passport-dropbox-oauth2/-/passport-dropbox-oauth2-1.1.0.tgz#77c737636e4841944dfb82dfc42c3d8ab782c10e"
+  dependencies:
+    passport-oauth "^1.0.0"
+    pkginfo "^0.2.3"
+
 passport-facebook@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/passport-facebook/-/passport-facebook-2.1.1.tgz#c39d0b52ae4d59163245a4e21a7b9b6321303311"
@@ -1144,6 +1151,13 @@ passport-oauth@0.1.x:
     oauth "0.9.x"
     passport "~0.1.1"
     pkginfo "0.2.x"
+
+passport-oauth@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/passport-oauth/-/passport-oauth-1.0.0.tgz#90aff63387540f02089af28cdad39ea7f80d77df"
+  dependencies:
+    passport-oauth1 "1.x.x"
+    passport-oauth2 "1.x.x"
 
 passport-strategy@1.x.x:
   version "1.0.0"
@@ -1202,7 +1216,7 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
-pkginfo@0.2.x:
+pkginfo@0.2.x, pkginfo@^0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.2.3.tgz#7239c42a5ef6c30b8f328439d9b9ff71042490f8"
 
