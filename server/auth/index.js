@@ -21,7 +21,7 @@ passport.deserializeUser(function (id, done) {
 });
 
 
-function loginCallbackHandler(objectMapper, type) {
+function loginCallbackHandler(objectMapper) {
   return function (accessToken, refreshToken, profile, done) {
     if (accessToken === null)
       return;
@@ -33,37 +33,35 @@ function loginCallbackHandler(objectMapper, type) {
 
     console.log("normalized profile="+JSON.stringify(dbprofile,2,2))
 
-    {
-      r
-        .table('users')
-        .getAll(dbprofile.login, { index: 'login' })
-        .filter({ type: dbprofile.type })
-        .run(r.conn)
-        .then(function (cursor) {
-          return cursor
-            .toArray()
-            .then(function (users) {
-              if (users.length > 0) {
-                return done(null, users[0]);
-              }
-              return r.table('users')
-                .insert(dbprofile)
-                .run(r.conn)
-                .then(function (response) {
-                  return r.table('users')
-                    .get(response.generated_keys[0])
-                    .run(r.conn);
-                })
-                .then(function (newUser) {
-                  done(null, newUser);
-                });
-            });
-        })
-        .catch(function (err) {
-          console.log('Error Getting User', err);
-        });
-    }
-  };
+    r
+      .table('users')
+      .getAll(dbprofile.login, { index: 'login' })
+      .filter({ type: dbprofile.type })
+      .run(r.conn)
+      .then(function (cursor) {
+        return cursor
+          .toArray()
+          .then(function (users) {
+            if (users.length > 0) {
+              return done(null, users[0]);
+            }
+            return r.table('users')
+              .insert(dbprofile)
+              .run(r.conn)
+              .then(function (response) {
+                return r.table('users')
+                  .get(response.generated_keys[0])
+                  .run(r.conn);
+              })
+              .then(function (newUser) {
+                done(null, newUser);
+              });
+          });
+      })
+      .catch(function (err) {
+        console.log('Error Getting User', err);
+      });
+  }
 };
 
 
