@@ -1,19 +1,32 @@
-module.exports = {
+var config = {
+  url: process.env.APP_HOSTNAME || 'localhost',
+  port: process.env.APP_PORT || 8000,
+
+  rethinkdb: {
+    host: process.env.RETHINKDB_HOST || 'localhost',
+    port: process.env.RETHINKDB_PORT || 28015,
+    db: process.env.RETHINKDB_DBNAME || 'passport_rethinkdb_tutorial'
+  },
+
   github: {
-    clientID: '', // Go to github.com, create an application and add clientID
-    clientSecret: '' // Go to github.com, create an application and add clientSecret
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET
+  },
+  google: {
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET
+  },
+  facebook: {
+    clientID: process.env.FACEBOOK_CLIENT_ID,
+    clientSecret: process.env.FACEBOOK_CLIENT_SECRET
   },
   twitter: {
-    consumerKey: '', // Go to apps.twitter.com, create an application and add consumerKey
-    consumerSecret: '' // Go to apps.twitter.com, create an application and add consumerSecret
+    consumerKey: process.env.TWITTER_CONSUMER_KEY,
+    consumerSecret: process.env.TWITTER_CONSUMER_SECRET
   },
-  url: '127.0.0.1',
-  ports: {
-    http: 8000
-  },
-  rethinkdb: {
-    host: 'localhost',
-    port: 28015,
-    db: 'passport_rethinkdb_tutorial'
-  }
 };
+
+config.realmURL = 'http://' + config.url + ':' + config.port;
+config.callbackURL = 'http://' + config.url + ':' + config.port + '/auth/login/callback/';
+
+module.exports = config;

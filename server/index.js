@@ -1,6 +1,9 @@
 /*jshint node:true */
 'use strict';
 
+// Load .env values into process.env
+require('dotenv').config();
+
 var config = require('config');
 var express = require('express');
 var session = require('express-session');
@@ -9,6 +12,8 @@ var engines = require('consolidate');
 var app = express();
 var auth = require('./auth');
 var authRouter = require('./auth/auth-router');
+
+//console.log("Config="+JSON.stringify(config,2,2));
 
 // Middleware
 app
@@ -37,4 +42,4 @@ app
     res.status(404).send('404 Not Found').end();
   });
 
-app.listen(config.get('ports').http);
+app.listen(config.get('port'));

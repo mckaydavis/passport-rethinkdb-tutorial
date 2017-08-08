@@ -2,28 +2,70 @@
 'use strict';
 
 var r = require('rethinkdb');
-require('rethinkdb-init')(r);
-var config = require('config');
+var config = require('config').get('rethinkdb');
+var db = {
+  table: 'users',
+  index: 'login'
+}
 
-r.connections = [];
-r.getNewConnection = function () {
-  return r.connect(config.get('rethinkdb'))
-    .then(function (conn) {
-      conn.use(config.get('rethinkdb').db);
-      r.connections.push(conn);
-      return conn;
-    });
-};
 
-r.init(config.get('rethinkdb'), [
-  {
-    name: 'users',
-    indexes: ['login']
-  }
-]).then(function (conn) {
-  r.conn = conn;
-  r.connections.push(conn);
-  r.conn.use(config.get('rethinkdb').db);
-});
+function onErr(err) {
+  console.error("Reql Error: "+JSON.stringify(err, 0, 2));
+  process.exit(1);
+}
+
+
+function doLog(rez) {
+  console.log("Reql result: "+JSON.stringify(rez, 0, 2));
+}
+
+
+function getOrCreateTable() {
+  return r
+    .db(config.db)
+    .tableList()
+    .contains(db.table)
+    .branch(r.do(() => ({ "tables_created": 0 })),
+            r.tableCreate(db.table))
+    .run(r.conn)
+    .then(doLog)
+}
+
+
+function getOrCreateIndex() {
+  var table = r
+        .db(config.db)
+        .table(db.table)
+
+  return table
+    .indexList()
+    .contains(db.index)
+    .branch(r.do(() => ({ "created": 0 })),
+            table.indexCreate(db.index))
+    .run(r.conn)
+    .then(doLog)
+}
+
+
+function getOrCreateDB() {
+  return r
+    .dbList()
+    .contains(config.db)
+    .branch(r.do(() => ({ "dbs_created": 0 })),
+            r.dbCreate(config.db))
+    .run(r.conn)
+    .then(doLog)
+
+}
+
+
+r
+  .connect(config)
+  .then((conn) => r.conn = conn)
+  .then(getOrCreateDB)
+  .then(getOrCreateTable)
+  .then(getOrCreateIndex)
+  .catch(onErr)
+
 
 module.exports = r;

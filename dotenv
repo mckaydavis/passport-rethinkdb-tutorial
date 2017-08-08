@@ -1,0 +1,21 @@
+# used to initialize config/default.js
+
+# APP_HOSTNAME=localhost
+# APP_PORT=8000
+
+# RETHINKDB_HOST=localhost
+# RETHINKDB_PORT=28015
+# RETHINKDB_DBNAME=passport_rethinkdb_tutorial
+
+# Go to apps.twitter.com, create an application and add consumerKey
+# TWITTER_CONSUMER_KEY=
+# TWITTER_CONSUMER_SECRET=
+
+# GOOGLE_CLIENT_ID=
+# GOOGLE_CLIENT_SECRET=
+
+# GITHUB_CLIENT_ID=
+# GITHUB_CLIENT_SECRET=
+
+# FACEBOOK_CLIENT_ID=
+# FACEBOOK_CLIENT_SECRET=

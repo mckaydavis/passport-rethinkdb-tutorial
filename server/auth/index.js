@@ -3,13 +3,12 @@
 
 var config = require('config');
 var passport = require('passport');
-var GitHubStrategy = require('passport-github').Strategy;
-var TwitterStrategy = require('passport-twitter').Strategy;
 var r = require('../db');
 
 passport.serializeUser(function (user, done) {
   return done(null, user.id);
 });
+
 
 passport.deserializeUser(function (id, done) {
   r
@@ -21,22 +20,34 @@ passport.deserializeUser(function (id, done) {
     });
 });
 
-var loginCallbackHandler = function (objectMapper, type) {
+
+function loginCallbackHandler(objectMapper, type) {
   return function (accessToken, refreshToken, profile, done) {
-    if (accessToken !== null) {
+    if (accessToken === null)
+      return;
+
+    console.log("profile="+JSON.stringify(profile,2,2))
+
+    var dbprofile = objectMapper(profile);
+    dbprofile.type = profile.provider;
+
+    console.log("normalized profile="+JSON.stringify(dbprofile,2,2))
+
+    {
       r
         .table('users')
-        .getAll(profile.username, { index: 'login' })
-        .filter({ type: type })
+        .getAll(dbprofile.login, { index: 'login' })
+        .filter({ type: dbprofile.type })
         .run(r.conn)
         .then(function (cursor) {
-          return cursor.toArray()
+          return cursor
+            .toArray()
             .then(function (users) {
               if (users.length > 0) {
                 return done(null, users[0]);
               }
               return r.table('users')
-                .insert(objectMapper(profile))
+                .insert(dbprofile)
                 .run(r.conn)
                 .then(function (response) {
                   return r.table('users')
@@ -54,41 +65,22 @@ var loginCallbackHandler = function (objectMapper, type) {
     }
   };
 };
-var callbackURL = 'http://' + config.get('url') + ':' + config.get('ports').http + '/auth/login/callback';
 
-// Github
-passport.use(new GitHubStrategy({
-    clientID: config.get('github').clientID,
-    clientSecret: config.get('github').clientSecret,
-    callbackURL: callbackURL + '/github'
-  },
-  loginCallbackHandler(function (profile) {
-    return {
-      'login': profile.username,
-      'name': profile.displayName || null,
-      'url': profile.profileUrl,
-      'avatarUrl': profile._json.avatar_url,
-      'type': 'github'
-    };
-  }, 'github')
-));
 
-// Twitter
-passport.use(new TwitterStrategy({
-    consumerKey: config.get('twitter').consumerKey,
-    consumerSecret: config.get('twitter').consumerSecret,
-    callbackURL: callbackURL + '/twitter'
-  },
-  loginCallbackHandler(function (profile) {
-    return {
-      'login': profile.username,
-      'name': profile.displayName || null,
-      'url': profile._raw.expanded_url || null,
-      'avatarUrl': profile._json.profile_image_url,
-      'type': 'twitter'
-    };
-  }, 'twitter')
-));
+
+function generateStrategy(type) {
+  var info = require('./' + type);
+  var opts = config.get(type);
+  opts.callbackURL = config.callbackURL + type;
+  console.log("registering strategy " + type + " opts = " + JSON.stringify(opts,2,2));
+  return new info.strategy(opts, loginCallbackHandler(info.normalizeProfileFn));
+}
+
+
+for(var type of ['twitter', 'google', 'facebook', 'github']) {
+  passport.use(generateStrategy(type));
+}
+
 
 passport.checkIfLoggedIn = function (req, res, next) {
   if (req.user) {
