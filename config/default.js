@@ -24,6 +24,10 @@ var config = {
     consumerKey: process.env.TWITTER_CONSUMER_KEY,
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET
   },
+  box: {
+    clientID: process.env.BOX_CLIENT_ID,
+    clientSecret: process.env.BOX_CLIENT_SECRET
+  },
 };
 
 config.realmURL = 'http://' + config.url + ':' + config.port;

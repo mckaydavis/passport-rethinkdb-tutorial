@@ -51,6 +51,17 @@ authRouter
   .get('/login/twitter',
        auth.authenticate('twitter'));
 
+
+
+authRouter
+  .use('/login/callback/box',
+       auth.authenticate('box'),
+       redirectRoot);
+
+authRouter
+  .get('/login/box',
+       auth.authenticate('box'));
+
 // All
 authRouter.use('/user', authControllers.getUser);
 authRouter.use('/logout', authControllers.logout);

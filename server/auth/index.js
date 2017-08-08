@@ -75,7 +75,7 @@ function generateStrategy(type) {
 }
 
 
-for(var type of ['twitter', 'google', 'facebook', 'github']) {
+for(var type of ['twitter', 'google', 'facebook', 'github', 'box']) {
   passport.use(generateStrategy(type));
 }
 
