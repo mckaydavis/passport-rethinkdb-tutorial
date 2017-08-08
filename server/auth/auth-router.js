@@ -11,56 +11,36 @@ function redirectRoot(req, res) {
   res.redirect('/');
 }
 
-// GitHub
-authRouter
-  .use('/login/callback/github',
-       auth.authenticate('github'),
-       redirectRoot)
 
-authRouter
-  .get('/login/github',
-       auth.authenticate('github'));
+var types = ['twitter', 'google', 'facebook', 'github', 'box'];
 
-// Google
-authRouter
-  .use('/login/callback/google',
-       auth.authenticate('google', { failureRedirect: '/login' } ),
-       redirectRoot);
-
-authRouter
-  .get('/login/google',
-       auth.authenticate('google', { scope: ['email', 'profile'] }));
-
-// Facebook
-authRouter
-  .use('/login/callback/facebook',
-       auth.authenticate('facebook'),
-       redirectRoot);
-authRouter
-  .get('/login/facebook',
-       auth.authenticate('facebook', { scope: ['email', 'public_profile' ]} ));
+var opts = {
+  google: {
+    login: { scope: ['email', 'profile'] },
+    callback:  { failureRedirect: '/login' }
+  },
+  facebook: {
+    login: { scope: ['email', 'public_profile' ]}
+  }
+}
 
 
-// Twitter
-authRouter
-  .use('/login/callback/twitter',
-       auth.authenticate('twitter'),
-       redirectRoot);
+for(var type of types) {
+  auth.initStrategy(type);
 
-authRouter
-  .get('/login/twitter',
-       auth.authenticate('twitter'));
+  var optsCallback = opts[type] ? opts[type].callback : undefined;
+  var optsLogin = opts[type] ? opts[type].login : undefined;
 
+  authRouter
+    .use('/login/callback/' + type,
+         auth.authenticate(type, optsCallback),
+         redirectRoot);
 
+  authRouter
+    .get('/login/' + type,
+         auth.authenticate(type, optsLogin));
+}
 
-authRouter
-  .use('/login/callback/box',
-       auth.authenticate('box'),
-       redirectRoot);
-
-authRouter
-  .get('/login/box',
-       auth.authenticate('box'));
 
 // All
 authRouter.use('/user', authControllers.getUser);

@@ -66,17 +66,16 @@ function loginCallbackHandler(objectMapper) {
 
 
 
-function generateStrategy(type) {
+passport.generateStrategy = function(type) {
   var info = require('./' + type);
   var opts = config.get(type);
   opts.callbackURL = config.callbackURL + type;
-  console.log("registering strategy " + type + " opts = " + JSON.stringify(opts,2,2));
+  console.log("passport registering strategy " + type + " opts = " + JSON.stringify(opts,2,2));
   return new info.strategy(opts, loginCallbackHandler(info.normalizeProfileFn));
 }
 
-
-for(var type of ['twitter', 'google', 'facebook', 'github', 'box']) {
-  passport.use(generateStrategy(type));
+passport.initStrategy = function(type) {
+  passport.use(passport.generateStrategy(type));
 }
 
 
