@@ -68,7 +68,7 @@ function loginCallbackHandler(objectMapper) {
 
 passport.generateStrategy = function(type) {
   var info = require('./' + type);
-  var opts = config.get(type);
+  var opts = config.has(type) ? config.get(type) : info.opts.strategy;
   opts.callbackURL = config.callbackURL + type;
   console.log("passport registering strategy " + type + " opts = " + JSON.stringify(opts,2,2));
   return new info.strategy(opts, loginCallbackHandler(info.normalizeProfileFn));
