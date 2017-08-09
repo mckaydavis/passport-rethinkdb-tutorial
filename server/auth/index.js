@@ -42,9 +42,9 @@ function loginCallbackHandler(objectMapper) {
         return cursor
           .toArray()
           .then(function (users) {
-            if (users.length > 0) {
-              return done(null, users[0]);
-            }
+            //if (users.length > 0) {
+            //  return done(null, users[0]);
+            //}
             return r.table('users')
               .insert(dbprofile)
               .run(r.conn)
