@@ -6,22 +6,30 @@ require('dotenv').config();
 
 var config = require('config');
 var express = require('express');
-var session = require('express-session');
 var engines = require('consolidate');
 
 var app = express();
 var auth = require('./auth');
 var authRouter = require('./auth/auth-router');
 
+var Session = require('express-session');
+var SessionStore = require('session-rethinkdb')
+
+var r = require('./db');
+
 //console.log("Config="+JSON.stringify(config,2,2));
+
+var Store = SessionStore(Session);
+var session = Session({
+    secret: 'zfnzkwjehgweghw',
+    resave: true,
+    saveUninitialized: false,
+    store: new Store(r)
+});
 
 // Middleware
 app
-  .use(session({
-    secret: 'zfnzkwjehgweghw',
-    resave: false,
-    saveUninitialized: true
-  }))
+  .use(session)
   .use(auth.initialize())
   .use(auth.session());
 

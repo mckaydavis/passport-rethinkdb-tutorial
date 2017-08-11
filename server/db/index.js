@@ -1,8 +1,11 @@
 /*jshint node:true */
 'use strict';
 
-var r = require('rethinkdb');
+
 var config = require('config').get('rethinkdb');
+var r = require('rethinkdbdash')(config);
+
+
 var db = {
   table: 'users',
   index: 'login'
@@ -27,7 +30,7 @@ function getOrCreateTable() {
     .contains(db.table)
     .branch(r.do(() => ({ "tables_created": 0 })),
             r.tableCreate(db.table))
-    .run(r.conn)
+    .run()
     .then(doLog)
 }
 
@@ -42,7 +45,7 @@ function getOrCreateIndex() {
     .contains(db.index)
     .branch(r.do(() => ({ "created": 0 })),
             table.indexCreate(db.index))
-    .run(r.conn)
+    .run()
     .then(doLog)
 }
 
@@ -53,19 +56,16 @@ function getOrCreateDB() {
     .contains(config.db)
     .branch(r.do(() => ({ "dbs_created": 0 })),
             r.dbCreate(config.db))
-    .run(r.conn)
+    .run()
     .then(doLog)
 
 }
 
-
 r
   .connect(config)
-  .then((conn) => r.conn = conn)
   .then(getOrCreateDB)
   .then(getOrCreateTable)
   .then(getOrCreateIndex)
   .catch(onErr)
-
 
 module.exports = r;

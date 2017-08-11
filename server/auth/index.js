@@ -38,24 +38,18 @@ function loginCallbackHandler(objectMapper) {
       .getAll(dbprofile.login, { index: 'login' })
       .filter({ type: dbprofile.type })
       .run(r.conn)
-      .then(function (cursor) {
-        return cursor
-          .toArray()
-          .then(function (users) {
-            //if (users.length > 0) {
-            //  return done(null, users[0]);
-            //}
+      .then(function (users) {
+        return r
+          .table('users')
+          .insert(dbprofile)
+          .run(r.conn)
+          .then(function (response) {
             return r.table('users')
-              .insert(dbprofile)
-              .run(r.conn)
-              .then(function (response) {
-                return r.table('users')
-                  .get(response.generated_keys[0])
-                  .run(r.conn);
-              })
-              .then(function (newUser) {
-                done(null, newUser);
-              });
+              .get(response.generated_keys[0])
+              .run(r.conn);
+          })
+          .then(function (newUser) {
+            done(null, newUser);
           });
       })
       .catch(function (err) {
